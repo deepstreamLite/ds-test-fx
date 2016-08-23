@@ -1,35 +1,36 @@
 'use strict';
 
+const utils = require( '../shared/utils' );
 const deepstream = require( 'deepstream.io-client-js' );
-const ds = deepstream( 'localhost:6021' ).login( null, startSending );
-const CURRENCIES = Object.keys( require( '../shared/rates.json' ).rates );
-const UPDATES_PER_SECOND = 10000;
-const DELAY_BETWEEN_PACKETS = 100;
-const TOTAL_UPDATES = Infinity;
-const currencyPairs = getCurrencyPairs();
+const argv = require('minimist')(process.argv.slice(2));
+const Measure = require( '../shared/measure' );
 
-var updatesSend = 0;
-var updatesSendLast = 0;
-var lastMeasureTimestamp = 0;
-var currencyPairIndex = 0;
+
+const DEEPSTREAM_URL = argv.dsUrl || 'localhost:6021';
+const UPDATES_PER_SECOND = argv.updatesPerSecond || 10000;
+const DELAY_BETWEEN_PACKETS = argv.delayBetweenPackets || 100;
+const TOTAL_UPDATES = argv.totalUpdates || Infinity;
+const CURRENCY_PAIRS = utils.getCurrencyPairs();
+const CCY_START = argv.ccyStart || 0;
+const CCY_END = argv.ccyEnd || CURRENCY_PAIRS.length - 1;
+const NAME = argv.name || 'provider';
+const MAX_MESSAGES_PER_PACKET = argv.packetMessages || 200;
+const TIME_BETWEEN_SENDING_QUEUED_PACKAGES = argv.packetGap || 8;
+
+
+const options = {
+	maxMessagesPerPacket: MAX_MESSAGES_PER_PACKET, 
+	timeBetweenSendingQueuedPackages: TIME_BETWEEN_SENDING_QUEUED_PACKAGES
+}
+const ds = deepstream( 'localhost:6021', options ).login( null, startSending );
+
+const measure = new Measure( NAME );
+var currencyPairIndex = CCY_START;
 var sendInterval;
 
-function getCurrencyPairs() {
-	var i, j, pairs = [];
-
-	for( i = 0; i < CURRENCIES.length; i++ )
-	for( j = 0; j < CURRENCIES.length; j++ ){
-		pairs.push ( 'FX/' + CURRENCIES[ i ] + CURRENCIES[ j ] );
-	}
-
-	return pairs;
-}
-
-
 function startSending() {
-	lastMeasureTimestamp = Date.now();
 	sendInterval = setInterval( send, DELAY_BETWEEN_PACKETS );
-	setInterval( measure, 1000 );
+	measure.start();
 }
 
 function send() {
@@ -38,23 +39,14 @@ function send() {
 	for( var i = 0; i < updatesToSend; i++  ) {
 		currencyPairIndex++;
 
-		if( currencyPairIndex >= currencyPairs.length ) {
-			currencyPairIndex = 0;
+		if( currencyPairIndex >= CCY_END ) {
+			currencyPairIndex = CCY_START;
 		}
-		updatesSend++;
-		ds.event.emit( 'FX/GBPUSD', updatesSend );
+		measure.count++;
+		ds.event.emit( CURRENCY_PAIRS[ CCY_START + currencyPairIndex ], measure.count );
 	}
 
-	if( updatesSend > TOTAL_UPDATES ) {
+	if( measure.count > TOTAL_UPDATES ) {
 		clearInterval( sendInterval );
 	}
-}
-
-function measure() {
-	var now = Date.now();
-	var timePassed = now - lastMeasureTimestamp;
-	var updatesSendInLastSecond = updatesSend - updatesSendLast;
-	console.log( `Send ${updatesSendInLastSecond} in last ${timePassed} ms total ${updatesSend}` );
-	lastMeasureTimestamp = now;
-	updatesSendLast = updatesSend;
 }

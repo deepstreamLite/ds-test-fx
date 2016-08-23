@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "deepstream.io-client-js": "^1.0.2"
+    "deepstream.io-client-js": "^1.0.2",
+    "minimist": "^1.2.0"
   }
 }

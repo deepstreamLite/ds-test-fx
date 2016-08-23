@@ -1,52 +1,45 @@
 'use strict';
 
+const utils = require( '../shared/utils' );
+const Measure = require( '../shared/measure' );
+const argv = require('minimist')(process.argv.slice(2));
+
+const CURRENCY_PAIRS = utils.getCurrencyPairs();
+const DEEPSTREAM_URL = argv.dsUrl || 'localhost:6021';
+const CCY_START = argv.ccyStart || 0;
+const CCY_END = argv.ccyEnd || CURRENCY_PAIRS.length - 1;
+const SUBSCRIPTIONS_PER_STEP = argv.subscriptionsPerStep || 300;
+const SUBSCRIPTION_INTERVAL = argv.subscriptionInterval || 800;
+const NAME = argv.name || 'receiver';
+
 const deepstream = require( 'deepstream.io-client-js' );
-const ds = deepstream( 'localhost:6021', {subscriptionTimeout: 10000 } ).login( null, subscribeToRates );
-const CURRENCIES = Object.keys( require( '../shared/rates.json' ).rates );
-var index = 0;
+const ds = deepstream( DEEPSTREAM_URL, {subscriptionTimeout: 10000 } ).login( null, subscribeToRates );
+const measure = new Measure( NAME );
+
+var index = CCY_START;
 var totalCurrencyPairSubscriptions = 0;
-var messagesReceivedInLastSecond = 0;
-var lastMeasureTimestamp = 0;
-var lastTotal = 0;
 
 ds.on( 'error', function( msg, type ){
 	console.log( 'ERROR:' + type + ' ' + msg );
 });
 
-
 function onIncomingMessage( total ) {
-	messagesReceivedInLastSecond++;
-	lastTotal = total;
+	measure.count++;
 }
 
 function subscribeToRates() {
-	var baseCurrency = CURRENCIES[ index ];
-	var i;
-
-	for( i = 0; i < CURRENCIES.length; i++ ) {
-		ds.event.subscribe( 'FX/' + baseCurrency + CURRENCIES[ i ], onIncomingMessage );
+	var endIndex = Math.min( CCY_END, index + SUBSCRIPTIONS_PER_STEP );
+	
+	for( index; index < endIndex; index++ ) {
+		ds.event.subscribe( CURRENCY_PAIRS[ index ], onIncomingMessage );
 		totalCurrencyPairSubscriptions++;
 	}
 
 	console.log( 'subscribed to ' + totalCurrencyPairSubscriptions );
-	index++;
 
-	if( index < CURRENCIES.length ) {
-		setTimeout( subscribeToRates, 800 );
+	if( index < CCY_END ) {
+		setTimeout( subscribeToRates, SUBSCRIPTION_INTERVAL );
 	} else {
-		startMeasuring();
+		measure.start();
 	}
-}
-
-function startMeasuring() {
-	lastMeasureTimestamp = Date.now();
-	setInterval( measure, 1000 );
-}
-
-function measure() {
-	var now = Date.now();
-	var timePassed = now - lastMeasureTimestamp;
-	console.log( `Received ${messagesReceivedInLastSecond} in last ${timePassed} ms with last ${lastTotal}` );
-	lastMeasureTimestamp = now;
-	messagesReceivedInLastSecond = 0;
 }
