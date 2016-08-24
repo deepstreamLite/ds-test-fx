@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test Dashboard</title>
+	<script type="text/javascript" src="lib/jquery.js"></script>
+	<script type="text/javascript" src="lib/ko.js"></script>
+	<script type="text/javascript" src="src/viewmodel.js"></script>
+	<script type="text/javascript" src="src/start.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/screen.css" />
+</head>
+<body>
+	<ul>
+		<li class="main">
+			<label>Prices per second</label>
+			<span data-bind="text:pricesInLastSecond"></span>
+		</li>
+		<li class="main">
+			<label>Prices sent</label>
+			<span data-bind="text:pricesSent"></span>
+		</li>
+		<li>
+			<label>Providers</label>
+			<span data-bind="text:providerCount"></span>
+		</li>
+		<li>
+			<label>Servers</label>
+			<span data-bind="text:serverCount"></span>
+		</li>
+		<li>
+			<label>Clients</label>
+			<span data-bind="text:clientsCount"></span>
+		</li>
+		<li>
+			<label>Requests made </label>
+			<span data-bind="text:requestCount"></span>
+		</li>
+	</ul>
+</body>
+</html>

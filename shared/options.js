@@ -38,3 +38,4 @@ exports.DB_USER = _getOption( 'dbUser', 'deepstream' );
 exports.DB_PASS = _getOption( 'dbPass', 'openpass' );
 exports.DB_NAME = _getOption( 'dbName', 'reports' );
 exports.TEST_CASE = _getOption( 'testCase', 'default-test-case' );
+exports.HTTP_PORT = _getOption( 'httpPort', 80, _toInt );
