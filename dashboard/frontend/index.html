@@ -4,35 +4,115 @@
 	<title>Test Dashboard</title>
 	<script type="text/javascript" src="lib/jquery.js"></script>
 	<script type="text/javascript" src="lib/ko.js"></script>
+	<script type="text/javascript" src="src/probe.js"></script>
 	<script type="text/javascript" src="src/viewmodel.js"></script>
 	<script type="text/javascript" src="src/start.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/screen.css" />
+	<script src="https://cdn.rawgit.com/deepstreamIO/deepstream.io-client-js/master/dist/deepstream.min.js"></script>
+	<script src="https://cdn.rawgit.com/deepstreamIO/deepstream.io-tools-ko/master/dist/ko-tools.js"></script>
+
 </head>
 <body>
-	<ul>
+	<ul id="totals">
 		<li class="main">
-			<label>Prices per second</label>
+			<label>prices received: </label>
 			<span data-bind="text:pricesInLastSecond"></span>
 		</li>
 		<li class="main">
-			<label>Prices sent</label>
+			<label>prices sent: </label>
 			<span data-bind="text:pricesSent"></span>
 		</li>
 		<li>
-			<label>Providers</label>
+			<label>providers: </label>
 			<span data-bind="text:providerCount"></span>
 		</li>
 		<li>
-			<label>Servers</label>
+			<label>servers: </label>
 			<span data-bind="text:serverCount"></span>
 		</li>
 		<li>
-			<label>Clients</label>
+			<label>receivers: </label>
 			<span data-bind="text:clientsCount"></span>
 		</li>
 		<li>
-			<label>Requests made </label>
-			<span data-bind="text:requestCount"></span>
+			<label>active: </label>
+			<span>
+				<em data-bind="text:totalProbes"></em> / <em data-bind="text:activeProbes"></em>
+			</span>
+		</li>
+	</ul>
+
+	<ul id="probes" data-bind="foreach: probes">
+		<li data-bind="css: { 
+			provider: runMode() === 'provider', 
+			receiver: runMode() === 'client',
+			active: active() === true
+		}">
+			<h2 data-bind="text:name"></h2>
+			<div>
+				<label>time</label>
+				<span data-bind="text:time"></span>
+			</div>
+			<div>
+				<label>duration</label>
+				<span data-bind="text:duration"></span>
+			</div>
+			<div>
+				<label>count</label>
+				<span data-bind="text:count"></span>
+			</div>
+			<div>
+				<label>total</label>
+				<span data-bind="text:total"></span>
+			</div>
+
+			<h3>Controls</h3>
+			<div>
+				<label>Role</label>
+				<span class="toggle">
+					<span class="toggle">
+					<em data-bind="css: { active: runMode() === 'client' }, click: runMode.bind( this, 'client' )">Receiver</em>
+					<em data-bind="css: { active: runMode() === 'provider' }, click: runMode.bind( this, 'provider' )">Provider</em>
+				</span>
+				</span>
+			</div>
+			<div>
+				<label>CCY Start</label>
+				<span>
+					<input type="text" data-bind="textInput: ccyStart" />
+				</span>
+			</div>
+			<div>
+				<label>CCY Start</label>
+				<span>
+					<input type="text" data-bind="textInput: ccyEnd" />
+				</span>
+			</div>
+			<div>
+				<label>Subscriptions per Step</label>
+				<span>
+					<input type="text" data-bind="textInput: subscriptionsPerStep" />
+				</span>
+			</div>
+			<div>
+				<label>Subscription Interval</label>
+				<span>
+					<input type="text" data-bind="textInput: subscriptionInterval" />
+				</span>
+			</div>
+			<div>
+				<label>Updates per second</label>
+				<span>
+					<input type="text" data-bind="textInput: subscriptionInterval" />
+				</span>
+			</div>
+			<div>
+				<label>Active</label>
+				<span class="toggle">
+					<em data-bind="css: { active: active() === true }, click: active.bind( this, true )">Yes</em>
+					<em data-bind="css: { active: active() === false }, click: active.bind( this, false )">No</em>
+				</span>
+			</div>
 		</li>
 	</ul>
 </body>
