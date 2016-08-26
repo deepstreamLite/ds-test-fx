@@ -7,19 +7,22 @@ const opts = require( '../shared/options' );
 const measure = new Measure( opts.NAME );
 
 var ds;
+var measureDs;
 var currencyPairIndex = opts.CCY_START;
 var sendInterval;
 
-exports.start = function() {
+exports.start = function( _ds ) {
+  measureDs = _ds;
+
 	ds = deepstream( opts.DEEPSTREAM_URL, {
-		maxMessagesPerPacket: opts.MAX_MESSAGES_PER_PACKET, 
+		maxMessagesPerPacket: opts.MAX_MESSAGES_PER_PACKET,
 		timeBetweenSendingQueuedPackages: opts.TIME_BETWEEN_SENDING_QUEUED_PACKAGES
 	}).login( null, startSending );
 };
 
 function startSending() {
 	sendInterval = setInterval( send, opts.DELAY_BETWEEN_PACKETS );
-	measure.start();
+	measure.start( measureDs );
 }
 
 function send() {

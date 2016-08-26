@@ -6,12 +6,15 @@ const deepstream = require( 'deepstream.io-client-js' );
 const measure = new Measure( opts.NAME );
 
 var ds;
+var measureDs;
 var index = opts.CCY_START;
 var totalCurrencyPairSubscriptions = 0;
 
-exports.start = function() {
+exports.start = function( _ds ) {
+	measureDs = _ds;
+
 	ds = deepstream( opts.DEEPSTREAM_URL, {
-		subscriptionTimeout: 10000 
+		subscriptionTimeout: 10000
 	}).login( null, subscribeToRates );
 
 	ds.on( 'error', function( msg, type ){
@@ -25,7 +28,7 @@ function onIncomingMessage( total ) {
 
 function subscribeToRates() {
 	var endIndex = Math.min( opts.CCY_END, index + opts.SUBSCRIPTIONS_PER_STEP );
-	
+
 	for( index; index < endIndex; index++ ) {
 		ds.event.subscribe( opts.CURRENCY_PAIRS[ index ], onIncomingMessage );
 		totalCurrencyPairSubscriptions++;
@@ -36,6 +39,6 @@ function subscribeToRates() {
 	if( index < opts.CCY_END ) {
 		setTimeout( subscribeToRates, opts.SUBSCRIPTION_INTERVAL );
 	} else {
-		measure.start();
+		measure.start( measureDs );
 	}
 }

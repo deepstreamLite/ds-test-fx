@@ -1,6 +1,6 @@
 'use strict';
 
-const db = require( './db' );
+//const db = require( './db' );
 const MEASURE_INTERVAL = 1000;
 
 var pad = function( input, amount ) {
@@ -24,8 +24,9 @@ module.exports = class Measuring{
 		this._interval = null;
 	}
 
-	start() {
-		db.createEntry();
+	start( ds ) {
+    this.metricsRecord = ds.record.getRecord('metrics/' + this._name);
+		//db.createEntry();
 		console.log( 'STARTING TO MEASURE FOR ' + this._name );
 		this.count = 0;
 		this._lastCount = 0;
@@ -38,8 +39,14 @@ module.exports = class Measuring{
 		var relTime = now - this._lastTime;
 		var relCount = this.count - this._lastCount;
 
-		db.storeMetrics( relTime, relCount, this.count );
-		//console.log( `${this._name} time: ${pad(relTime,4)} count: ${pad(relCount,5)} total: ${this.count}` );
+		//db.storeMetrics( relTime, relCount, this.count );
+		console.log( `${this._name} time: ${pad(relTime,4)} count: ${pad(relCount,5)} total: ${this.count}` );
+		this.metricsRecord.set(
+				{
+					time: relTime,
+					count: relCount,
+					total: this.count
+				});
 
 		this._lastTime = now;
 		this._lastCount = this.count;
