@@ -5,7 +5,7 @@ const Control = require( './shared/control' );
 
 global.clientDS = deepstream( opts.CONTROL_DEEPSTREAM_URL ).login({ username: opts.NAME });
 global.clientDS.on( 'error', function( msg, type ){
-	console.log( 'CLIENT DS ERROR:' , type , msg );
+	console.log( 'CLIENT DS ERROR:', type, msg );
 });
 
 var server = http.createServer((req, res) => {
@@ -15,7 +15,7 @@ var server = http.createServer((req, res) => {
 });
 
 server.listen( opts.HTTP_PORT, function(){
-	console.log( 'Listening on ', opts.HTTP_PORT );
+	console.log( 'Listening on', opts.HTTP_PORT );
 });
 
 const control = new Control( opts.NAME );

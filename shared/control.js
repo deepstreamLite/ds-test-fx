@@ -11,7 +11,7 @@ module.exports = class Control{
 		this._node = null;
 		this._measure = new Measure( name );
 
-		console.log( 'STARTING CONTROL FOR ' + this._name );
+		console.log( 'STARTING CONTROL FOR', this._name );
 		global.controlRecord = global.clientDS.record.getRecord( 'control/' + this._name );
 		global.metricsRecord = global.clientDS.record.getRecord( 'metrics/' + this._name );
 

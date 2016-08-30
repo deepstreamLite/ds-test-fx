@@ -16,7 +16,7 @@ module.exports = class NodeClient {
 		}).login( null, this._subscribeToRates.bind(this) );
 
 		this._testDS.on( 'error', function( msg, type ){
-			console.log( 'TEST DS ERROR: ' + type + ' ' + msg );
+			console.log( 'TEST DS ERROR:', type, msg );
 			global.clientDS.event.emit('clientError', {
 				type : type,
 				msg  : msg
@@ -47,7 +47,7 @@ module.exports = class NodeClient {
 			this._totalCurrencyPairSubscriptions++;
 		}
 
-		console.log( 'subscribed to ' + this._totalCurrencyPairSubscriptions );
+		console.log( 'subscribed to', this._totalCurrencyPairSubscriptions );
 
 		if( this._index < ccyEnd ) {
 			const subscriptionInterval = global.controlRecord.get( 'subscriptionInterval' );
