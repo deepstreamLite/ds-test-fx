@@ -1,44 +1,59 @@
 'use strict';
 
-const Measure = require( '../shared/measure' );
 const opts = require( '../shared/options' );
 const deepstream = require( 'deepstream.io-client-js' );
-const measure = new Measure( opts.NAME );
 
-var ds;
-var measureDs;
-var index = opts.CCY_START;
-var totalCurrencyPairSubscriptions = 0;
 
-exports.start = function( _ds ) {
-	measureDs = _ds;
+module.exports = class NodeClient {
+	constructor ( measure ){
+		this._active = true;
+		this._totalCurrencyPairSubscriptions = 0;
+		this._index = global.controlRecord.get( 'ccyStart' );
+		this._measure = measure;
 
-	ds = deepstream( opts.DEEPSTREAM_URL, {
-		subscriptionTimeout: 10000
-	}).login( null, subscribeToRates );
+		this._testDS = deepstream( opts.DEEPSTREAM_URL, {
+			subscriptionTimeout: 10000
+		}).login( null, this._subscribeToRates.bind(this) );
 
-	ds.on( 'error', function( msg, type ){
-		console.log( 'ERROR:' + type + ' ' + msg );
-	});
-};
-
-function onIncomingMessage( total ) {
-	measure.count++;
-}
-
-function subscribeToRates() {
-	var endIndex = Math.min( opts.CCY_END, index + opts.SUBSCRIPTIONS_PER_STEP );
-
-	for( index; index < endIndex; index++ ) {
-		ds.event.subscribe( opts.CURRENCY_PAIRS[ index ], onIncomingMessage );
-		totalCurrencyPairSubscriptions++;
+		this._testDS.on( 'error', function( msg, type ){
+			console.log( 'TEST DS ERROR: ' + type + ' ' + msg );
+			global.clientDS.event.emit('clientError', {
+				type : type,
+				msg  : msg
+			});
+		});
 	}
 
-	console.log( 'subscribed to ' + totalCurrencyPairSubscriptions );
+	stop(){
+		console.log( 'stopping client' );
+		this._active = false;
+		// close connection to server to unsubscribe from all events
+		this._testDS.close();
+		this._measure.stop();
+	}
 
-	if( index < opts.CCY_END ) {
-		setTimeout( subscribeToRates, opts.SUBSCRIPTION_INTERVAL );
-	} else {
-		measure.start( measureDs );
+	_onIncomingMessage( total ) {
+		this._measure.count++;
+	}
+
+	_subscribeToRates() {
+		const ccyEnd = global.controlRecord.get( 'ccyEnd' );
+		const subscriptionsPerStep = global.controlRecord.get( 'subscriptionsPerStep' );
+		const endIndex = Math.min( ccyEnd, this._index + subscriptionsPerStep );
+
+		for( this._index; this._index < endIndex; this._index++ ) {
+			this._testDS.event.subscribe( opts.CURRENCY_PAIRS[ this._index ],
+					this._onIncomingMessage.bind(this) );
+			this._totalCurrencyPairSubscriptions++;
+		}
+
+		console.log( 'subscribed to ' + this._totalCurrencyPairSubscriptions );
+
+		if( this._index < ccyEnd ) {
+			const subscriptionInterval = global.controlRecord.get( 'subscriptionInterval' );
+			setTimeout( this._subscribeToRates.bind(this), subscriptionInterval );
+		} else {
+			this._measure.start();
+		}
 	}
 }

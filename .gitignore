@@ -1,2 +1,8 @@
 */node_modules
 node_modules
+eb_autogen.zip
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

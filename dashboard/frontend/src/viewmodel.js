@@ -2,6 +2,9 @@ class ViewModel{
 	constructor( ds ) {
 		this._ds = ds;
 		this._ds.record.listen( 'metrics/*', this._onMetric.bind( this ) );
+		this._ds.event.subscribe( 'clientError', function(e) {
+			console.log('client error: ' + e);
+		} );
 		this.pricesInLastSecond = ko.observable( 0 );
 		this.pricesSent = ko.observable( 0 );
 		this.clientsCount = ko.observable( 0 );
@@ -17,10 +20,11 @@ class ViewModel{
 	}
 
 	_onMetric( metric, isSubscribed ) {
+		console.log('metric subscribed = ', metric, isSubscribed)
 		var probe = this.probes().filter( probe => { return probe.name() === metric; })[ 0 ];
 
 		if( isSubscribed && !probe ) {
-			this.probes.push( new Probe( this._ds, metric ) );
+			this.probes.push( new Probe( this._ds, metric.replace('metrics/', '')));
 		}
 
 		if( !isSubscribed && probe ) {

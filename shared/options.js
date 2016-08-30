@@ -2,7 +2,9 @@
 
 const utils = require( './utils' );
 const argv = require('minimist')(process.argv.slice(2));
-
+console.log( '=======================' );
+console.log( process.env );
+console.log( '=======================' );
 function _getOption( key, defaultValue, processFn ) {
 	var value;
 	if( typeof process.env[ key ] !== 'undefined' ) {
@@ -23,7 +25,7 @@ function _toInt( val ) {
 exports.CURRENCY_PAIRS = utils.getCurrencyPairs();
 exports.RUN_MODE = _getOption( 'runMode', 'provider')
 exports.DEEPSTREAM_URL = _getOption( 'dsUrl', 'localhost:6021' );
-exports.CONTROL_DEEPSTREAM_URL = _getOption( 'controlDsUrl', 'localhost:6022' );
+exports.CONTROL_DEEPSTREAM_URL = _getOption( 'controlDsUrl', 'ec2-54-154-140-90.eu-west-1.compute.amazonaws.com:6021' );
 exports.CCY_START = _getOption( 'ccyStart' , 0, _toInt );
 exports.CCY_END = _getOption( 'ccyEnd' , exports.CURRENCY_PAIRS.length - 1, _toInt);
 exports.SUBSCRIPTIONS_PER_STEP = _getOption( 'subscriptionsPerStep', 300, _toInt);
@@ -39,4 +41,4 @@ exports.DB_USER = _getOption( 'dbUser', 'deepstream' );
 exports.DB_PASS = _getOption( 'dbPass', 'openpass' );
 exports.DB_NAME = _getOption( 'dbName', 'reports' );
 exports.TEST_CASE = _getOption( 'testCase', 'default-test-case' );
-exports.HTTP_PORT = _getOption( 'httpPort', 80, _toInt );
+exports.HTTP_PORT = _getOption( 'PORT', 80, _toInt );

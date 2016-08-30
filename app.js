@@ -1,10 +1,12 @@
-var provider = require( './node-provider' );
-var client = require( './node-client' );
-var opts = require( './shared/options' );
-var http = require( 'http' );
-var deepstream = require( 'deepstream.io-client-js' );
+const opts = require( './shared/options' );
+const http = require( 'http' );
+const deepstream = require( 'deepstream.io-client-js' );
+const Control = require( './shared/control' );
 
-var ds = deepstream( opts.CONTROL_DEEPSTREAM_URL ).login();
+global.clientDS = deepstream( opts.CONTROL_DEEPSTREAM_URL ).login({ username: opts.NAME });
+global.clientDS.on( 'error', function( msg, type ){
+	console.log( 'CLIENT DS ERROR:' , type , msg );
+});
 
 var server = http.createServer((req, res) => {
 	res.setHeader('Content-Type', 'text/text');
@@ -16,11 +18,4 @@ server.listen( opts.HTTP_PORT, function(){
 	console.log( 'Listening on ', opts.HTTP_PORT );
 });
 
-if( opts.RUN_MODE === 'provider' ) {
-	provider.start( ds );
-} else if( opts.RUN_MODE === 'client' ) {
-	client.start( ds );
-
-} else {
-	throw new Error( 'Unknown runMode ' + opts.RUN_MODE );
-}
+const control = new Control( opts.NAME );

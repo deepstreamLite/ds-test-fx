@@ -1,9 +1,9 @@
 class Probe{
 	constructor( ds, name ) {
-		this._metricRecord = ds.record.getRecord( name );
-		this._controlRecord = ds.record.getRecord( name );
+		this._metricRecord = ds.record.getRecord( 'metrics/' + name );
+		this._controlRecord = ds.record.getRecord( 'control/' + name );
 		this.name = ko.observable( name );
-		
+
 		this.time = kot.getObservable( this._metricRecord, 'time' );
 		this.duration = kot.getObservable( this._metricRecord, 'duration' );
 		this.count = kot.getObservable( this._metricRecord, 'count' );

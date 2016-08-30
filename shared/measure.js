@@ -17,21 +17,20 @@ var pad = function( input, amount ) {
 module.exports = class Measuring{
 
 	constructor( name ) {
-		this.count = 0;
 		this._name = name;
+		this.count = 0;
 		this._lastCount = 0;
 		this._lastTime = 0;
-		this._interval = null;
 	}
 
-	start( ds ) {
-    this.metricsRecord = ds.record.getRecord('metrics/' + this._name);
+	start() {
 		//db.createEntry();
 		console.log( 'STARTING TO MEASURE FOR ' + this._name );
-		this.count = 0;
-		this._lastCount = 0;
-		this._lastTime = 0;
 		this._interval = setInterval( this._measure.bind( this ), MEASURE_INTERVAL );
+	}
+
+	stop() {
+		clearInterval(this._interval);
 	}
 
 	_measure() {
@@ -41,9 +40,10 @@ module.exports = class Measuring{
 
 		//db.storeMetrics( relTime, relCount, this.count );
 		console.log( `${this._name} time: ${pad(relTime,4)} count: ${pad(relCount,5)} total: ${this.count}` );
-		this.metricsRecord.set(
+		global.metricsRecord.set(
 				{
-					time: relTime,
+					time: now,
+					duration: relTime,
 					count: relCount,
 					total: this.count
 				});
