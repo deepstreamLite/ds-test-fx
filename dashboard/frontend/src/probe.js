@@ -14,6 +14,7 @@ class Probe{
 		this.name = ko.observable( name );
 
 		this.time = kot.getObservable( this._metricRecord, 'time' );
+		this.serverIp = kot.getObservable( this._metricRecord, 'serverIp' );
 		this.duration = kot.getObservable( this._metricRecord, 'duration' );
 		this.count = kot.getObservable( this._metricRecord, 'count' );
 		this.total = kot.getObservable( this._metricRecord, 'total' );

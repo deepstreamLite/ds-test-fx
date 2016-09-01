@@ -25,7 +25,7 @@ function _toInt( val ) {
 exports.CURRENCY_PAIRS = utils.getCurrencyPairs();
 exports.RUN_MODE = _getOption( 'runMode', 'provider')
 exports.DEEPSTREAM_URL = _getOption( 'dsUrl', 'localhost:6021' );
-exports.CONTROL_DEEPSTREAM_URL = _getOption( 'controlDsUrl', 'ec2-54-154-140-90.eu-west-1.compute.amazonaws.com:6021' );
+exports.CONTROL_DEEPSTREAM_URL = _getOption( 'controlDsUrl', '52.210.144.102:6021' );
 exports.CCY_START = _getOption( 'ccyStart' , 0, _toInt );
 exports.CCY_END = _getOption( 'ccyEnd' , exports.CURRENCY_PAIRS.length - 1, _toInt);
 exports.SUBSCRIPTIONS_PER_STEP = _getOption( 'subscriptionsPerStep', 300, _toInt);

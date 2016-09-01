@@ -5,13 +5,13 @@ const deepstream = require( 'deepstream.io-client-js' );
 
 
 module.exports = class NodeClient {
-	constructor ( measure ){
+	constructor ( measure, serverIp ){
 		this._active = true;
 		this._totalCurrencyPairSubscriptions = 0;
 		this._index = global.controlRecord.get( 'ccyStart' );
 		this._measure = measure;
 
-		this._testDS = deepstream( opts.DEEPSTREAM_URL, {
+		this._testDS = deepstream( serverIp, {
 			subscriptionTimeout: 10000
 		}).login( { username: opts.NAME }, this._subscribeToRates.bind(this) );
 

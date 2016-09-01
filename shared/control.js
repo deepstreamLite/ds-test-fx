@@ -15,6 +15,17 @@ module.exports = class Control{
 		console.log( 'STARTING CONTROL FOR', this._name );
 		global.controlRecord = global.clientDS.record.getRecord( 'control/' + this._name );
 		global.metricsRecord = global.clientDS.record.getRecord( 'metrics/' + this._name );
+		global.serversRecord = global.clientDS.record.getRecord( 'servers' );
+
+		global.serversRecord.subscribe( 'ips', function ( ips ) {
+				if ( !this._serverIp && ips.length !== 0){
+					this._serverIp = ips[ this._getRandomInt( 0, ips.length - 1 ) ] + ':6021';
+					global.metricsRecord.set( 'serverIp', this._serverIp );
+					this._updateState( global.controlRecord.get() );
+				} else {
+					global.serversRecord.unsubscribe( 'ips' );
+				}
+			}.bind(this) );
 
 		global.metricsRecord.set( 'heartbeat', 0 );
 
@@ -35,6 +46,14 @@ module.exports = class Control{
 		global.controlRecord.subscribe( this._updateState.bind( this ) );
 	}
 
+	/**
+	 * Returns a random integer between min (inclusive) and max (inclusive)
+	 * Using Math.round() will give you a non-uniform distribution!
+	 */
+	_getRandomInt(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
 	_resetControlState(){
 		global.controlRecord.set({
 			active               : false,
@@ -48,11 +67,11 @@ module.exports = class Control{
 	}
 
 	_updateState( data ){
-		if ( data.active && !this._node ) {
+		if ( data.active && !this._node && this._serverIp ) {
 			if( data.runMode === 'provider' ) {
-				this._node = new Provider( this._measure );
+				this._node = new Provider( this._measure, this._serverIp );
 			} else if( data.runMode === 'client' ) {
-				this._node = new Client( this._measure );
+				this._node = new Client( this._measure, this._serverIp );
 			} else {
 				throw new Error( 'Unknown runMode ' + data.runMode );
 			}

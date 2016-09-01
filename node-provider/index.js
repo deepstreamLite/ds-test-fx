@@ -5,13 +5,13 @@ const opts = require( '../shared/options' );
 const deepstream = require( 'deepstream.io-client-js' );
 
 module.exports = class NodeProvider {
-	constructor( measure ){
+	constructor ( measure, serverIp ){
 		this._active = true;
 		this._currencyPairIndex = opts.CCY_START;
 		this._sendInterval;
 		this._measure = measure;
 
-		this._testDS = deepstream( opts.DEEPSTREAM_URL, {
+		this._testDS = deepstream( serverIp, {
 			maxMessagesPerPacket             : opts.MAX_MESSAGES_PER_PACKET,
 			timeBetweenSendingQueuedPackages : opts.TIME_BETWEEN_SENDING_QUEUED_PACKAGES
 		}).login( { username: opts.NAME }, this._startSending.bind( this ) );
