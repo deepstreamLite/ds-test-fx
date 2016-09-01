@@ -1,19 +1,22 @@
 'use strict';
 
-const opts = require( '../shared/options' );
 const deepstream = require( 'deepstream.io-client-js' );
-
+const opts = require( '../../shared/options' );
 
 module.exports = class NodeClient {
-	constructor ( measure, serverIp ){
+	constructor ( measure, serverUrl ){
+				console.log( 'subscribing to', serverUrl)
 		this._active = true;
 		this._totalCurrencyPairSubscriptions = 0;
 		this._index = global.controlRecord.get( 'ccyStart' );
 		this._measure = measure;
 
-		this._testDS = deepstream( serverIp, {
-			subscriptionTimeout: 10000
-		}).login( { username: opts.NAME }, this._subscribeToRates.bind(this) );
+		this._testDS = deepstream( serverUrl, {
+			subscriptionTimeout: 1000000
+		}).login( { username: opts.NAME }, function(){
+			console.log( 'Logged in succesfully' );
+			this._subscribeToRates();
+		}.bind( this ) );
 
 		this._testDS.on( 'error', function( msg, type ){
 			console.log( 'TEST DS ERROR:', type, msg );

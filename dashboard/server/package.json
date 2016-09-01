@@ -1,5 +1,5 @@
 {
-  "name": "node-provider",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,11 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.5.4",
-    "deepstream.io-client-js": "git+https://github.com/deepstreamIO/deepstream.io-client-js.git",
-    "minimist": "^1.2.0",
-    "mysql": "^2.11.1"
+    "deepstream.io-client-js": "git+https://github.com/deepstreamIO/deepstream.io-client-js.git"
   }
 }

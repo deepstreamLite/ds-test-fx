@@ -1,17 +1,18 @@
 'use strict';
 
-const utils = require( '../shared/utils' );
-const opts = require( '../shared/options' );
 const deepstream = require( 'deepstream.io-client-js' );
 
+const utils = require( '../../shared/utils' );
+const opts = require( '../../shared/options' );
+
 module.exports = class NodeProvider {
-	constructor ( measure, serverIp ){
+	constructor ( measure, serverUrl ){
 		this._active = true;
 		this._currencyPairIndex = opts.CCY_START;
 		this._sendInterval;
 		this._measure = measure;
 
-		this._testDS = deepstream( serverIp, {
+		this._testDS = deepstream( serverUrl, {
 			maxMessagesPerPacket             : opts.MAX_MESSAGES_PER_PACKET,
 			timeBetweenSendingQueuedPackages : opts.TIME_BETWEEN_SENDING_QUEUED_PACKAGES
 		}).login( { username: opts.NAME }, this._startSending.bind( this ) );

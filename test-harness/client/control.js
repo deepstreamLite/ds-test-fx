@@ -1,11 +1,12 @@
 'use strict';
-const Provider = require( '../node-provider' );
-const Client = require( '../node-client' );
-const Measure = require( '../shared/measure' );
 const deepstream = require( 'deepstream.io-client-js' );
-const opts = require('./options');
 
-module.exports = class Control{
+const Provider = require( './provider' );
+const Client = require( './client' );
+const Measure = require( '../../shared/measure' );
+const opts = require('../../shared/options');
+
+module.exports = class Control {
 	constructor( name ) {
 		this._name = name;
 
@@ -17,17 +18,15 @@ module.exports = class Control{
 		global.metricsRecord = global.clientDS.record.getRecord( 'metrics/' + this._name );
 		global.serversRecord = global.clientDS.record.getRecord( 'servers' );
 
-		global.serversRecord.subscribe( 'ips', function ( ips ) {
-				if ( !this._serverIp && ips.length !== 0){
-					this._serverIp = ips[ this._getRandomInt( 0, ips.length - 1 ) ] + ':6021';
-					global.metricsRecord.set( 'serverIp', this._serverIp );
-					this._updateState( global.controlRecord.get() );
-				} else {
-					global.serversRecord.unsubscribe( 'ips' );
-				}
-			}.bind(this) );
-
-		global.metricsRecord.set( 'heartbeat', 0 );
+ 		global.serversRecord.subscribe( 'ips', function ( ips ) {
+ 			if ( !this._serverUrl && ips.length !== 0){
+ 				this._serverUrl = ips[ this._getRandomInt( 0, ips.length - 1 ) ] + ':6021';
+ 				global.metricsRecord.set( 'serverIp', this._serverUrl );
+ 				this._updateState( global.controlRecord.get() );
+ 			} else {
+ 				global.serversRecord.unsubscribe( 'ips' );
+ 			}
+ 		}.bind(this) );
 
 		// send heartbeat once a second
 		setInterval(function(){
@@ -46,14 +45,6 @@ module.exports = class Control{
 		global.controlRecord.subscribe( this._updateState.bind( this ) );
 	}
 
-	/**
-	 * Returns a random integer between min (inclusive) and max (inclusive)
-	 * Using Math.round() will give you a non-uniform distribution!
-	 */
-	_getRandomInt(min, max) {
-		return Math.floor(Math.random() * (max - min + 1)) + min;
-	}
-
 	_resetControlState(){
 		global.controlRecord.set({
 			active               : false,
@@ -66,12 +57,20 @@ module.exports = class Control{
 		});
 	}
 
+	/**
+ 	 * Returns a random integer between min (inclusive) and max (inclusive)
+ 	 * Using Math.round() will give you a non-uniform distribution!
+ 	 */
+ 	_getRandomInt(min, max) {
+ 		return Math.floor(Math.random() * (max - min + 1)) + min;
+ 	}
+
 	_updateState( data ){
-		if ( data.active && !this._node && this._serverIp ) {
+		if ( data.active && !this._node && this._serverUrl ) {
 			if( data.runMode === 'provider' ) {
-				this._node = new Provider( this._measure, this._serverIp );
+				this._node = new Provider( this._measure, this._serverUrl );
 			} else if( data.runMode === 'client' ) {
-				this._node = new Client( this._measure, this._serverIp );
+				this._node = new Client( this._measure, this._serverUrl );
 			} else {
 				throw new Error( 'Unknown runMode ' + data.runMode );
 			}

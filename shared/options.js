@@ -2,9 +2,10 @@
 
 const utils = require( './utils' );
 const argv = require('minimist')(process.argv.slice(2));
-console.log( '=======================' );
+console.log( '=========== ENV ============' );
 console.log( process.env );
-console.log( '=======================' );
+console.log( '============================' );
+
 function _getOption( key, defaultValue, processFn ) {
 	var value;
 	if( typeof process.env[ key ] !== 'undefined' ) {
@@ -23,8 +24,7 @@ function _toInt( val ) {
 }
 
 exports.CURRENCY_PAIRS = utils.getCurrencyPairs();
-exports.RUN_MODE = _getOption( 'runMode', 'provider')
-exports.DEEPSTREAM_URL = _getOption( 'dsUrl', 'localhost:6021' );
+exports.RUN_MODE = _getOption( 'runMode', 'provider');
 exports.CONTROL_DEEPSTREAM_URL = _getOption( 'controlDsUrl', '52.210.144.102:6021' );
 exports.CCY_START = _getOption( 'ccyStart' , 0, _toInt );
 exports.CCY_END = _getOption( 'ccyEnd' , exports.CURRENCY_PAIRS.length - 1, _toInt);
