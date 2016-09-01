@@ -2,7 +2,8 @@
 const Provider = require( '../node-provider' );
 const Client = require( '../node-client' );
 const Measure = require( '../shared/measure' );
-const opts = require('./options')
+const deepstream = require( 'deepstream.io-client-js' );
+const opts = require('./options');
 
 module.exports = class Control{
 	constructor( name ) {
@@ -15,6 +16,26 @@ module.exports = class Control{
 		global.controlRecord = global.clientDS.record.getRecord( 'control/' + this._name );
 		global.metricsRecord = global.clientDS.record.getRecord( 'metrics/' + this._name );
 
+		global.metricsRecord.set( 'heartbeat', 0 );
+
+		// send heartbeat once a second
+		setInterval(function(){
+			var time = Date.now();
+			global.metricsRecord.set( 'heartbeat', time );
+		}, 1000);
+
+		global.clientDS.on('connectionStateChanged', function( state ){
+			if ( state === deepstream.CONSTANTS.CONNECTION_STATE.OPEN ){
+				this._resetControlState();
+			}
+		}.bind(this));
+
+		this._resetControlState();
+
+		global.controlRecord.subscribe( this._updateState.bind( this ) );
+	}
+
+	_resetControlState(){
 		global.controlRecord.set({
 			active               : false,
 			runMode              : opts.RUN_MODE,
@@ -24,8 +45,6 @@ module.exports = class Control{
 			subscriptionInterval : opts.SUBSCRIPTION_INTERVAL,
 			updatesPerSecond     : opts.UPDATES_PER_SECOND
 		});
-
-		global.controlRecord.subscribe( this._updateState.bind( this ) );
 	}
 
 	_updateState( data ){

@@ -42,10 +42,10 @@ module.exports = class Measuring{
 		console.log( `${this._name} time: ${pad(relTime,4)} count: ${pad(relCount,5)} total: ${this.count}` );
 		global.metricsRecord.set(
 				{
-					time: now,
-					duration: relTime,
-					count: relCount,
-					total: this.count
+					time     : now,
+					duration : relTime,
+					count    : relCount,
+					total    : this.count
 				});
 
 		this._lastTime = now;

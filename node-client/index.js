@@ -13,7 +13,7 @@ module.exports = class NodeClient {
 
 		this._testDS = deepstream( opts.DEEPSTREAM_URL, {
 			subscriptionTimeout: 10000
-		}).login( null, this._subscribeToRates.bind(this) );
+		}).login( { username: opts.NAME }, this._subscribeToRates.bind(this) );
 
 		this._testDS.on( 'error', function( msg, type ){
 			console.log( 'TEST DS ERROR:', type, msg );

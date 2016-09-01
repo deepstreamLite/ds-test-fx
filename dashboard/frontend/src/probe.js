@@ -1,6 +1,15 @@
 class Probe{
-	constructor( ds, name ) {
+	constructor( ds, name, viewModel ) {
+		this._parent = viewModel;
 		this._metricRecord = ds.record.getRecord( 'metrics/' + name );
+		this._metricRecord.subscribe( 'heartbeat', this._onHeartbeat.bind( this  ) );
+		this._metricRecord.whenReady( function( record ){
+			if (!record.get('heartbeat')){
+				console.log('removing client without heartbeat');
+				//this._parent.remove( this );
+			}
+		}.bind(this) );
+
 		this._controlRecord = ds.record.getRecord( 'control/' + name );
 		this.name = ko.observable( name );
 
@@ -21,5 +30,12 @@ class Probe{
 	destroy() {
 		this._metricRecord.discard();
 		this._controlRecord.discard();
+	}
+
+	_onHeartbeat( timeStamp ) {
+		if( Date.now() - timeStamp > 2000  ) {
+			console.log('heartbeat timeout');
+			//this._parent.remove( this );
+		}
 	}
 }

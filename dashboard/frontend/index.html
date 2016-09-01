@@ -8,7 +8,7 @@
 	<script type="text/javascript" src="src/viewmodel.js"></script>
 	<script type="text/javascript" src="src/start.js"></script>
 	<link rel="stylesheet" type="text/css" href="css/screen.css" />
-	<script src="https://cdn.rawgit.com/deepstreamIO/deepstream.io-client-js/master/dist/deepstream.min.js"></script>
+	<script src="https://cdn.rawgit.com/deepstreamIO/deepstream.io-client-js/master/dist/deepstream.js"></script>
 	<script src="https://cdn.rawgit.com/deepstreamIO/deepstream.io-tools-ko/master/dist/ko-tools.js"></script>
 
 </head>
@@ -28,7 +28,7 @@
 		</li>
 		<li>
 			<label>servers: </label>
-			<span data-bind="text:serverCount"></span>
+			<span data-bind="text:serverCount, attr:{ title: serverIps }"></span>
 		</li>
 		<li>
 			<label>receivers: </label>
@@ -39,6 +39,12 @@
 			<span>
 				<em data-bind="text:totalProbes"></em> / <em data-bind="text:activeProbes"></em>
 			</span>
+		</li>
+		<li>
+			<button data-bind="click:disableAllProbes">Disable All</button>
+		</li>
+		<li>
+			<button data-bind="click:enableAllProbes">Enable All</button>
 		</li>
 	</ul>
 

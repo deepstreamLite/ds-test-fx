@@ -14,7 +14,8 @@ module.exports = class NodeProvider {
 		this._testDS = deepstream( opts.DEEPSTREAM_URL, {
 			maxMessagesPerPacket             : opts.MAX_MESSAGES_PER_PACKET,
 			timeBetweenSendingQueuedPackages : opts.TIME_BETWEEN_SENDING_QUEUED_PACKAGES
-		}).login( null, this._startSending.bind( this ) );
+		}).login( { username: opts.NAME }, this._startSending.bind( this ) );
+
 		this._testDS.on( 'error', function( msg, type ){
 			console.log( 'TEST DS ERROR:', type, msg );
 			global.clientDS.event.emit('clientError', {
