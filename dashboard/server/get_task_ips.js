@@ -18,6 +18,7 @@ function getIP() {
 		.then(data => ecs.describeContainerInstances({ containerInstances: data.containerInstanceArns, cluster: CLUSTER  }).promise())
 		.then(data => {
 			var i_ids = data.containerInstances.map(d => { return d.ec2InstanceId })
+			//console.log(i_ids);
 			return ec2.describeInstances({ InstanceIds: i_ids }).promise()
 		})
 		.catch( err => {
@@ -28,10 +29,11 @@ function getIP() {
 function updateServerRecord() {
 	console.log( 'Updating Server Record' );
 	getIP().then(data => {
+		//console.log(JSON.stringify(data));
 		serverRecord.set(
 			'ips',
-			data.Reservations.map(res => {
-				return res.Instances[0].PublicIpAddress;
+			data.Reservations[0].Instances.map(res => {
+				return res.PublicIpAddress;
 			})
 		);
 		console.log(serverRecord.get());

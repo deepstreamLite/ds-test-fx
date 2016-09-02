@@ -40,13 +40,17 @@ module.exports = class Measuring{
 
 		//db.storeMetrics( relTime, relCount, this.count );
 		console.log( `${this._name} time: ${pad(relTime,4)} count: ${pad(relCount,5)} total: ${this.count}` );
+		console.log(this._ip);
 		global.metricsRecord.set(
 				{
+					serverIp: global.metricsRecord.get( 'serverIp' ),
 					time     : now,
 					duration : relTime,
 					count    : relCount,
 					total    : this.count
 				});
+
+		console.log( global.metricsRecord.get() );
 
 		this._lastTime = now;
 		this._lastCount = this.count;

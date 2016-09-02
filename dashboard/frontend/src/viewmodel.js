@@ -44,7 +44,7 @@ class ViewModel{
 			this.serverCount( ips.length );
 			this.serverIps( ips.join(', ') );
 
-		}.bind(this), true );
+		}.bind(this) );
 	}
 
 	_onMetric( metric, isSubscribed, response ) {
