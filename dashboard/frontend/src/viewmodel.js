@@ -48,7 +48,7 @@ class ViewModel{
 	}
 
 	_onMetric( metric, isSubscribed, response ) {
-		var probe = this.probes().filter( probe => { return probe.name() === metric; })[ 0 ];
+		var probe = this.probes().filter( probe => { return `metrics/${probe.name()}` === metric; })[ 0 ];
 
 		if( isSubscribed && !probe ) {
 			console.log('metric subscribed = ', metric);

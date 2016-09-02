@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.5.4",
+    "deepstream.io": "git+https://github.com/deepstreamIO/deepstream.io.git",
     "deepstream.io-client-js": "git+https://github.com/deepstreamIO/deepstream.io-client-js.git",
     "minimist": "^1.2.0",
     "mysql": "^2.11.1"
