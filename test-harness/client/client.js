@@ -5,14 +5,14 @@ const opts = require( '../../shared/options' );
 
 module.exports = class NodeClient {
 	constructor ( measure, serverUrl ){
-				console.log( 'subscribing to', serverUrl)
 		this._active = true;
 		this._totalCurrencyPairSubscriptions = 0;
 		this._index = global.controlRecord.get( 'ccyStart' );
 		this._measure = measure;
 
 		this._testDS = deepstream( serverUrl, {
-			subscriptionTimeout: 1000000
+			subscriptionTimeout: 1000000,
+			maxReconnectAttempts: 0
 		}).login( { username: opts.NAME }, function(){
 			console.log( 'Logged in succesfully' );
 			this._subscribeToRates();

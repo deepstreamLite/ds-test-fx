@@ -24,10 +24,10 @@ function _toInt( val ) {
 }
 
 exports.CURRENCY_PAIRS = utils.getCurrencyPairs();
-exports.RUN_MODE = _getOption( 'runMode', 'provider');
+exports.RUN_MODE = _getOption( 'runMode', 'client');
 exports.CONTROL_DEEPSTREAM_URL = _getOption( 'controlDsUrl', '52.210.144.102:6021' );
 exports.CCY_START = _getOption( 'ccyStart' , 0, _toInt );
-exports.CCY_END = _getOption( 'ccyEnd' , 3000, _toInt);
+exports.CCY_END = _getOption( 'ccyEnd' , 150, _toInt);
 exports.SUBSCRIPTIONS_PER_STEP = _getOption( 'subscriptionsPerStep', 300, _toInt);
 exports.SUBSCRIPTION_INTERVAL = _getOption( 'subscriptionInterval', 800, _toInt);
 exports.NAME = _getOption( 'name', exports.RUN_MODE + '_' + Math.round( Math.random()*10000000000000 ));

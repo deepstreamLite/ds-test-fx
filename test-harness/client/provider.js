@@ -14,7 +14,8 @@ module.exports = class NodeProvider {
 
 		this._testDS = deepstream( serverUrl, {
 			maxMessagesPerPacket             : opts.MAX_MESSAGES_PER_PACKET,
-			timeBetweenSendingQueuedPackages : opts.TIME_BETWEEN_SENDING_QUEUED_PACKAGES
+			timeBetweenSendingQueuedPackages : opts.TIME_BETWEEN_SENDING_QUEUED_PACKAGES,
+			maxReconnectAttempts: 0
 		}).login( { username: opts.NAME }, this._startSending.bind( this ) );
 
 		this._testDS.on( 'error', function( msg, type ){

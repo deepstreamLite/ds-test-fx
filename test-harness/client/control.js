@@ -20,19 +20,13 @@ module.exports = class Control {
 
  		global.serversRecord.subscribe( 'ips', function ( ips ) {
  			if ( !this._serverUrl && ips.length !== 0){
- 				this._serverUrl = ips[ this._getRandomInt( 0, ips.length - 1 ) ] + ':6021';
+ 				this._serverUrl = ips[ this._getRandomInt( 0, ips.length - 1 ) ];
  				global.metricsRecord.set( 'serverIp', this._serverUrl );
  				this._updateState( global.controlRecord.get() );
  			} else {
  				global.serversRecord.unsubscribe( 'ips' );
  			}
  		}.bind(this) );
-
-		// send heartbeat once a second
-		setInterval(function(){
-			var time = Date.now();
-			global.metricsRecord.set( 'heartbeat', time );
-		}, 1000);
 
 		global.clientDS.on('connectionStateChanged', function( state ){
 			if ( state === deepstream.CONSTANTS.CONNECTION_STATE.OPEN ){
@@ -74,6 +68,14 @@ module.exports = class Control {
 			} else {
 				throw new Error( 'Unknown runMode ' + data.runMode );
 			}
+			this._node._testDS.on( 'connectionStateChanged', ( state ) => {
+				if( state === 'ERROR' && this._node ) {
+					console.log( 'lost connection, so closing' );
+					this._node.stop();
+					this._node = null;
+					global.controlRecord.set( 'active', false );
+				}
+			} );
 		} else if ( !data.active && this._node ) {
 			this._node.stop();
 			this._node = null;

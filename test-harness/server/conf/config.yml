@@ -34,12 +34,12 @@ sslCa: null
 #        filename: ../var/deepstream
 
 # Plugin Configuration
-plugins:
-   message:
-     name: redis
-     options:
-       host: ${REDIS_HOST}
-       port: ${REDIS_PORT}
+#plugins:
+#   message:
+#     name: redis
+ #    options:
+  #     host: ${REDIS_HOST}
+   #    port: ${REDIS_PORT}
   #
   # cache:
   #   name: memcached

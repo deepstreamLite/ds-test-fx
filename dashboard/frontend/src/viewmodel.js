@@ -25,7 +25,6 @@ class ViewModel{
 	}
 
 	remove( probe ) {
-		console.log( 'removing ', probe );
 		this.probes.splice( this.probes.indexOf( probe ), 1 );
 		probe.destroy();
 	}
@@ -36,6 +35,15 @@ class ViewModel{
 			probes[i].active(state);
 		}
 
+	}
+
+	setAllInactiveToClient( state ) {
+		var probes = this.probes();
+		for (var i = 0; i < probes.length; i++) {
+			if( !probes[i].active() ) {
+				probes[i].runMode('client');
+			}
+		}
 	}
 
 	_attachServerUpdate(){
@@ -82,7 +90,7 @@ class ViewModel{
 
 			active++;
 
-			if( probes[ i ].runMode === 'provider' ) {
+			if( probes[ i ].runMode() === 'provider' ) {
 				providerCount++;
 				pricesSent += probes[ i ].count();
 			} else {
