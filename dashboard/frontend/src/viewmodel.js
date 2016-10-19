@@ -16,7 +16,7 @@ class ViewModel{
 		this.lastUpdated = ko.observable( 'NEVER' );
 		this.totalProbes = ko.observable( 0 );
 		this.activeProbes = ko.observable( 0 );
-		this.probes = ko.observableArray();
+		window.probes = this.probes = ko.observableArray();
 		this._lastUpdateTime = null;
 		this._updateInterval = setInterval( this._updateTotals.bind( this ), 1000 );
 		this.enableAllProbes = this.setAllProbes.bind(this, true);
