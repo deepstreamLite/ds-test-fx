@@ -1,4 +1,6 @@
 # ds-test-fx
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/deepstreamIO/ds-test-fx.svg)](https://greenkeeper.io/)
 A FX Price Update Benchmark for deepstream.io
 
 To run:
